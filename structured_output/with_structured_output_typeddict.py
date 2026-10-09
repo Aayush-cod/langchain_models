@@ -14,6 +14,8 @@ model = ChatGroq(model = 'openai/gpt-oss-20b')
 
 
 # Annoted
+# we use Annotated with TypedDict when we want to add extra information or instructions to a dictionary's fields without changing their actual data types.
+# Adding meta data
 class Review(TypedDict):
     key_themes: Annotated[list[str], "Write down all the key themes discussed in the review in a list"]
     summary: Annotated[str, "A brief summary of the review"]

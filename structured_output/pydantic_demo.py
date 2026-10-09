@@ -27,6 +27,7 @@ class Student(BaseModel):
 # Field Function - can add default values , constraints, description or regex expressions
 new_student = {'name': 'Aayush', 'age': '21', 'email': "abc@gmail.com", 'cgpa':8.2}
 
+# ** unpacks the dictionary into keys and values student('name':'Aayush', ...)
 student = Student(**new_student)
 
 student_dict = dict(student)
