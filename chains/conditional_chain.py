@@ -4,7 +4,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser, PydanticOutputParser
 from pydantic import BaseModel , Field
 from typing import Literal
-from langchain_core.runnables import RunnableBranch, RunnableLambda
+from langchain_core.runnables import RunnableBranch, RunnableLambda, RunnablePassthrough
 
 
 load_dotenv()
@@ -24,7 +24,12 @@ prompt1 = PromptTemplate(
 
 )
 
-classifier_chain = prompt1 | model | parser2
+# using RunnablePassthrough.assign() to preserve the original feedback while adding the sentiment classification.
+classifier_chain = RunnablePassthrough.assign(
+    sentiment=prompt1 | model | parser2
+)
+
+print(classifier_chain.invoke({'feedback':'This is a terrible Phone.'}))
 
 prompt2 = PromptTemplate(
     template='Write an appropriate response to this positive feedback \n {feedback}',
@@ -41,9 +46,19 @@ branch_chain = RunnableBranch(
      #  (conditon2 , chain to execute)
       #  Default chain
 
-      (lambda x: x.sentiment == 'positive' , prompt2 | model | parser),
-      (lambda x : x.sentiment == 'negative', prompt3 | model | parser),
-      RunnableLambda(lambda x : 'could not find sentiment')
+    #   (lambda x: x.sentiment == 'positive' , prompt2 | model | parser),
+    #   (lambda x : x.sentiment == 'negative', prompt3 | model | parser),
+    #   RunnableLambda(lambda x : 'could not find sentiment')
+
+      (
+        lambda x: x["sentiment"].sentiment == "positive",
+        prompt2 | model | parser
+    ),
+    (
+        lambda x: x["sentiment"].sentiment == "negative",
+        prompt3 | model | parser
+    ),
+    RunnableLambda(lambda x: "Could not find sentiment")
 )
 
 
