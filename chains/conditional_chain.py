@@ -50,7 +50,7 @@ branch_chain = RunnableBranch(
     #   (lambda x : x.sentiment == 'negative', prompt3 | model | parser),
     #   RunnableLambda(lambda x : 'could not find sentiment')
 
-      (
+    (
         lambda x: x["sentiment"].sentiment == "positive",
         prompt2 | model | parser
     ),
